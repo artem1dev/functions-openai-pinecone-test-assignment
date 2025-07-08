@@ -1,0 +1,85 @@
+{
+  "Comment": "PDF ingestion workflow",
+  "StartAt": "ExtractText",
+  "States": {
+    "ExtractText": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-1:000000000000:function:ExtractText",
+      "TimeoutSeconds": 60,
+      "Next": "ChunkText",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.errorInfo",
+          "Next": "UpdateError"
+        }
+      ]
+    },
+    "ChunkText": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-1:000000000000:function:ChunkText",
+      "TimeoutSeconds": 60,
+      "Next": "EmbedChunks",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.errorInfo",
+          "Next": "UpdateError"
+        }
+      ]
+    },
+    "EmbedChunks": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-1:000000000000:function:EmbedChunks",
+      "TimeoutSeconds": 60,
+      "Next": "IndexChunks",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.errorInfo",
+          "Next": "UpdateError"
+        }
+      ]
+    },
+    "IndexChunks": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-1:000000000000:function:IndexChunks",
+      "TimeoutSeconds": 60,
+      "Next": "UpdateSuccess",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.errorInfo",
+          "Next": "UpdateError"
+        }
+      ]
+    },
+    "UpdateSuccess": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-1:000000000000:function:UpdateStatusSuccess",
+      "TimeoutSeconds": 60,
+      "Parameters": {
+        "fileId.$": "$.fileId"
+      },
+      "End": true
+    },
+    "UpdateError": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-1:000000000000:function:UpdateStatusError",
+      "TimeoutSeconds": 60,
+      "Parameters": {
+        "fileId.$": "$.fileId",
+        "errorInfo.$": "$.errorInfo"
+      },
+      "End": true
+    }
+  }
+}

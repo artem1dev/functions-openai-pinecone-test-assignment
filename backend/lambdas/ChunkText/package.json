@@ -1,0 +1,9 @@
+{
+  "name": "ChunkText",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {},
+  "scripts": {
+    "build": "esbuild index.ts --bundle --platform=node --target=node18 --outfile=index.js"
+  }
+}

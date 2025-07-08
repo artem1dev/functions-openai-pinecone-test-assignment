@@ -1,0 +1,12 @@
+{
+  "name": "ExtractText",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.842.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "scripts": {
+    "build": "esbuild index.ts --bundle --platform=node --target=node18 --outfile=index.js"
+  }
+}
