@@ -1,56 +1,121 @@
-$Env:AWS_ACCESS_KEY_ID     = 'test'
-$Env:AWS_SECRET_ACCESS_KEY = 'test'
-$Env:AWS_DEFAULT_REGION    = 'us-west-1'
+## Prerequisites
 
-aws --endpoint-url=http://localhost:4566 s3 mb s3://my-bucket
+* Node.js ^18.x and npm
+* Docker Compose
+* PowerShell (for Windows scripts)
+* For Linux: bash, AWS CLI, zip, curl
 
-$roleArn = 'arn:aws:iam::000000000000:role/DummyRole'
-aws --endpoint-url=http://localhost:4566 stepfunctions create-state-machine `
-  --name MyStateMachine `
-  --definition file://state-machine.json `
-  --role-arn $roleArn
+## Installation
 
-aws --endpoint-url=http://localhost:4566 stepfunctions list-state-machines
+### Backend
 
-aws --endpoint-url=http://localhost:4566 dynamodb create-table `
-  --table-name Files `
-  --attribute-definitions AttributeName=id,AttributeType=S `
-  --key-schema AttributeName=id,KeyType=HASH `
-  --billing-mode PAY_PER_REQUEST
+```bash
+cd backend
+npm install
+```
 
-aws --endpoint-url=http://localhost:4566 dynamodb list-tables
+### Frontend
 
-aws --endpoint-url=http://localhost:4566 s3api put-bucket-cors `
-  --bucket my-bucket `
-  --cors-configuration file://cors.json
+```bash
+cd frontend
+npm install
+```
 
+## Environment Configuration
 
-docker-compose down -v
+### `.env` File
 
-docker-compose up -d  
+1. Copy the template:
+
+   ```bash
+   cp .env.example .env
+   ```
+2. Edit `.env` to set your variables.
+
+### AWS Lambda Config (`env.json`)
+
+1. Copy JSON template:
+
+   ```powershell
+   Copy-Item .\scripts\env.example.json .\scripts\env.json
+   ```
+2. Open and configure `scripts/env.json` with your AWS settings.
+
+---
+
+## Running Locally
+
+### Backend
+
+```bash
+cd backend
+npm run start:dev
+```
+
+* The API will be available at `http://localhost:3001` by default.
+
+### Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+* The client app will run at `http://localhost:3000` (or as defined in `.env`).
+
+---
+
+## Docker Compose (Backend)
+
+To build and start the container in detached mode:
+
+```bash
+docker-compose up -d
+```
+
+---
+
+## AWS Lambda Deployment Scripts
+
+All deployment scripts are in `backend/scripts`.
+
+### Windows (PowerShell)
+
+```powershell
+.\scripts\env-setup.ps1
 
 .\scripts\build-lambdas.ps1
-.\scripts\env-setup.ps1
+
 .\scripts\package-deploy-lambdas.ps1
+```
 
-//get logs
-$execrn = aws --endpoint-url=http://localhost:4566 stepfunctions list-executions `
-  --state-machine-arn arn:aws:states:us-west-1:000000000000:stateMachine:MyStateMachine `
-  --query 'executions[0].executionArn' `
-  --output text
-  
-aws --endpoint-url=http://localhost:4566 stepfunctions get-execution-history `
-  --execution-arn $execrn `
-  --output json > history.json
+### Linux (bash)
 
+```bash
+./scripts/env-setup.sh
 
-//get functions
-aws --endpoint-url http://localhost:4566 lambda list-functions `
-  --query "Functions[].FunctionName" `
-  --output text
+./scripts/build-lambdas.sh
 
+./scripts/package-deploy-lambdas.sh
+```
+
+### ExtractText config
+
+You need to delete old zip file, and create new one with this files and folders:
+- node_modules
+- test
+- index.js
+- package-lock.json
+- package.json
+
+And than run this commands (from backend root folder):
+
+```
 aws --endpoint-url http://localhost:4566 lambda delete-function --function-name ExtractText
+```
 
+Windows (PowerShell)
+```powershell
 aws --endpoint-url http://localhost:4566 lambda create-function `
   --function-name ExtractText `
   --runtime nodejs18.x `
@@ -58,3 +123,15 @@ aws --endpoint-url http://localhost:4566 lambda create-function `
   --role arn:aws:iam::000000000000:role/DummyRole `
   --zip-file fileb://lambdas/ExtractText/ExtractText.zip `
   --environment file://./scripts/env.json
+```
+
+Linux (bash)
+```bash
+aws --endpoint-url http://localhost:4566 lambda create-function \
+  --function-name ExtractText \
+  --runtime "nodejs18.x" \
+  --handler "index.handler" \
+  --role "arn:aws:iam::000000000000:role/DummyRole" \
+  --zip-file "fileb://lambdas/ExtractText/ExtractText.zip" \
+  --environment "file://./scripts/env.json"
+```

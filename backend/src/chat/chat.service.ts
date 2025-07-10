@@ -27,7 +27,7 @@ export class ChatService {
     const context = matches.map(m => (m.metadata as any).text).join('\n\n');
 
     const messages: ChatMsg[] = [
-      { role: 'system', content: `Use only this context:\n${context}` },
+      { role: 'system', content: `You are a helpful assistant that answers based solely on the provided context.\n\nContext:\n${context}` },
       { role: 'user', content: question },
     ];
     return this.openai.chat(messages);
