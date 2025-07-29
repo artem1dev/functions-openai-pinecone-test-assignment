@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import api from '../lib/api';
 
@@ -13,6 +13,7 @@ export default function UploadPage() {
   const [fileId, setFileId] = useState<string>();
   const [status, setStatus] = useState<'pending' | 'success' | 'error'>();
   const [error, setError] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -73,6 +74,9 @@ export default function UploadPage() {
       setFile(null);
       setStatus(undefined);
       setError('');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (err) {
       console.error(err);
       setError('Delete file error');
@@ -92,7 +96,7 @@ export default function UploadPage() {
       <div className="card">
         <h1>Upload your PDF</h1>
         <label className="custom-file-upload file-label">
-          <input type="file" accept=".pdf" onChange={onSelect} disabled={!!fileId} />
+          <input ref={fileInputRef} type="file" accept=".pdf" onChange={onSelect} disabled={!!fileId} />
           📄 Choose file
         </label>
         <button onClick={upload} disabled={!file || !!fileId}>Upload</button>
