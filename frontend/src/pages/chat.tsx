@@ -16,18 +16,25 @@ export default function ChatPage() {
   };
 
   return (
-    <div>
-      <div className="messages">
+    <div className="app-container" style={{ flexDirection: 'column' }}>
+      <div className="message-container">
         {messages.map((m, i) => (
-          <div key={i} className={m.from}>{m.text}</div>
+          <div key={i} className={`message ${m.from}`}>
+            {m.text}
+          </div>
         ))}
       </div>
-      <input
-        disabled={!fileId}
-        value={q}
-        onChange={e => setQ(e.target.value)}
-      />
-      <button disabled={!q} onClick={send}>Send</button>
+
+      <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: 500 }}>
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Ask your question..."
+          disabled={!fileId}
+        />
+        <button onClick={send} disabled={!q}>Send</button>
+      </div>
     </div>
   );
 }

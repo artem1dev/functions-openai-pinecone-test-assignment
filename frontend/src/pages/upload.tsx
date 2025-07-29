@@ -78,50 +78,29 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Загрузите ваш PDF</h1>
+    <div className="app-container">
+      <div className="card">
+        <h1>Upload your PDF</h1>
+        <label className="custom-file-upload file-label">
+          <input type="file" accept=".pdf" onChange={onSelect} disabled={!!fileId} />
+          📄 Choose file
+        </label>
+        <button onClick={upload} disabled={!file || !!fileId}>Upload</button>
 
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={onSelect}
-        disabled={!!fileId}
-        className="mb-2"
-      />
-      <br />
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {status && <p>Status: <strong>{status}</strong></p>}
 
-      <button
-        onClick={upload}
-        disabled={!file || !!fileId}
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Upload
-      </button>
-
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-      {status && <p className="mt-2">Status: {status}</p>}
-
-      {status === 'success' && (
-        <button
-          onClick={() => router.push('/chat')}
-          className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Got to a chat
-        </button>
-      )}
-
-      {fileId && (
-        <button
-          onClick={removeFile}
-          className="mt-4 ml-4 px-4 py-2 bg-red-600 text-white rounded"
-        >
-          Delete file
-        </button>
-      )}
-
-      {status === 'error' && (
-        <p className="text-red-500 mt-2">Error while processing the file</p>
-      )}
+        {status === 'success' && (
+          <button className="secondary" onClick={() => router.push('/chat')}>
+            Go to chat
+          </button>
+        )}
+        {fileId && (
+          <button className="danger" onClick={removeFile}>
+            Delete file
+          </button>
+        )}
+      </div>
     </div>
   );
 }
