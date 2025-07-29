@@ -14,7 +14,7 @@ export class FilesService {
     private readonly stepFunctions: StepFunctionsService,
   ) { }
 
-  async createPresign(email: string): Promise<{ fileId: string; uploadUrl: string }> {
+  async createPresign(email: string): Promise<{ fileId: string; uploadUrl: string; key: string }> {
     const file = this.repo.create({
       userEmail: email,
       s3Key: '',
@@ -28,10 +28,7 @@ export class FilesService {
     file.s3Key = key;
     await this.repo.save(file);
 
-    // Запускаем Step Function (при автоматическом S3-триггере можно убрать)
-    await this.stepFunctions.startWorkflow(file.id, key);
-
-    return { fileId: file.id, uploadUrl };
+    return { fileId: file.id, uploadUrl, key };
   }
 
   async getStatus(fileId: string): Promise<{ status: FileStatus; updatedAt: Date }> {

@@ -29,7 +29,7 @@ export default function UploadPage() {
     try {
       const { data } = await api.post('/files/presign', { email });
       console.log('PRESIGN:', data);
-      const { fileId: id, uploadUrl } = data;
+      const { fileId: id, uploadUrl, key } = data;
 
       const res = await fetch(uploadUrl, {
         method: 'PUT',
@@ -37,6 +37,8 @@ export default function UploadPage() {
       });
 
       if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
+
+      await api.post('/files/trigger', { fileId: id, key });
 
       localStorage.setItem('fileId', id);
       setFileId(id);
