@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import api from '../lib/api';
+import { useRouter } from 'next/router';
 
 export default function ChatPage() {
+  const router = useRouter();
   const [q, setQ] = useState('');
   const [messages, setMessages] = useState<{ from: 'user' | 'bot'; text: string }[]>([]);
   const fileId = typeof window !== 'undefined'
@@ -17,6 +19,11 @@ export default function ChatPage() {
 
   return (
     <div className="app-container" style={{ flexDirection: 'column' }}>
+      <div className="top-right-buttons">
+        <button className="secondary" onClick={() => router.push('/upload')}>
+          ← Back to upload
+        </button>
+      </div>
       <div className="message-container">
         {messages.map((m, i) => (
           <div key={i} className={`message ${m.from}`}>

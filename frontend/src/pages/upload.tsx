@@ -79,6 +79,14 @@ export default function UploadPage() {
 
   return (
     <div className="app-container">
+      <div className="top-right-buttons">
+        <button className="danger" onClick={() => {
+          localStorage.clear();
+          router.push('/');
+        }}>
+          Log out
+        </button>
+      </div>
       <div className="card">
         <h1>Upload your PDF</h1>
         <label className="custom-file-upload file-label">
