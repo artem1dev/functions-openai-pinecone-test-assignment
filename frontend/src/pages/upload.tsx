@@ -103,10 +103,24 @@ export default function UploadPage() {
       <div className="card">
         <h1>Upload your PDF</h1>
         <label className={`custom-file-upload file-label ${fileId || isLoading ? 'uploaded' : ''}`}>
-          <input ref={fileInputRef} type="file" accept=".pdf" onChange={onSelect} disabled={!!file || !!fileId || isLoading} />
+          <input ref={fileInputRef} type="file" accept=".pdf" onChange={onSelect} disabled={!!fileId || isLoading} />
           📄 Choose file
         </label>
-        {file && <span style={{ color: '#dbeafe', padding: "0 0 0 5px"}}>{file.name}</span>}
+        {file && <span
+          style={{
+            color: '#dbeafe',
+            padding: '0 0 0 5px',
+            display: 'inline-block',
+            maxWidth: '200px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            verticalAlign: 'middle',
+          }}
+          title={file.name}
+        >
+          {file.name}
+        </span>}
         <button onClick={upload} disabled={!file || !!fileId || isLoading} style={{ display: 'inline-flex', justifyContent: "center" }}>
           {isLoading ? (
             <>

@@ -23,7 +23,7 @@ export class ChatService {
     if (file.status !== 'success') throw new BadRequestException('File not ready');
 
     const qEmb = await this.openai.embed(question);
-    const matches = await this.pinecone.query(qEmb, fileId, 5);
+    const matches = await this.pinecone.query(qEmb, fileId, 15);
     const context = matches.map(m => (m.metadata as any).text).join('\n\n');
 
     const messages: ChatMsg[] = [

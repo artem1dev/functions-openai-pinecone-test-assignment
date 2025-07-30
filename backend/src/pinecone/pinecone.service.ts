@@ -37,7 +37,7 @@ export class PineconeService implements OnModuleInit {
       topK,
       includeMetadata: true,
       filter: {
-        fileId: myFileId // 👈 фильтрация только по нужному файлу
+        fileId: myFileId
       }
     });
     return res.matches;
