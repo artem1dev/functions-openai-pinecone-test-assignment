@@ -1,4 +1,8 @@
 import OpenAI from 'openai';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+const s3 = new S3Client({ region: process.env.AWS_REGION! })
+
+const BUCKET = process.env.S3_BUCKET_NAME!
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -20,6 +24,15 @@ export const handler = async (event: {
       metadata: { text, fileId, chunkIndex },
     });
   }
+  const key = `vectors/${fileId}.json`
+  const body = JSON.stringify(embedded)
 
-  return { fileId, vectors: embedded };
+  await s3.send(new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+    Body: body,
+    ContentType: 'application/json',
+  }))
+
+  return { fileId, s3Key: key }
 };

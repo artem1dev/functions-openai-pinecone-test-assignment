@@ -29,12 +29,16 @@ export class PineconeService implements OnModuleInit {
 
   async query(
     vector: number[],
+    myFileId: string,
     topK = 5
   ): Promise<ScoredPineconeRecord<RecordMetadata>[]> {
     const res = await this.client.index(this.config.get<string>('PINECONE_INDEX')).query({
       vector,
       topK,
       includeMetadata: true,
+      filter: {
+        fileId: myFileId // 👈 фильтрация только по нужному файлу
+      }
     });
     return res.matches;
   }
