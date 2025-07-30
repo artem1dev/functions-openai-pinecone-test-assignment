@@ -70,10 +70,24 @@ input[type="email"] {
   background: #171a2d;
   width: 100%;
   padding: 0.6rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #3a4251;
   color: #fefffe;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus {
+  background: #171a2d;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #171a2d inset !important;
+  -webkit-text-fill-color: #fefffe !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 button {
@@ -115,16 +129,18 @@ button.danger:hover {
 
 .message-container {
   flex: 1;
+  min-width: 50%;
   overflow-y: auto;
   padding: 1rem;
-  background: #fff;
+  background: #171a2d;
   border-radius: 12px;
+  border: 1px solid #3a4251;
   box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.04);
   margin-bottom: 1rem;
 }
 
 .message {
-  max-width: 300px;
+  max-width: 500px;
   padding: 0.6rem;
   border-radius: 10px;
   margin-bottom: 0.5rem;
@@ -132,13 +148,13 @@ button.danger:hover {
 
 .message.user {
   margin-left: auto;
-  background-color: #dbeafe;
+  background-color: #262b4b;
   text-align: right;
 }
 
 .message.bot {
   margin-right: auto;
-  background-color: #e5e7eb;
+  background-color: rgb(79, 98, 136);
 }
 
 .custom-file-upload {
@@ -171,4 +187,15 @@ button.danger:hover {
   right: 1rem;
   display: flex;
   gap: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.custom-file-upload.uploaded {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

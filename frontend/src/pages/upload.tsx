@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import api from '../lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function UploadPage() {
   const [status, setStatus] = useState<'pending' | 'success' | 'error'>();
   const [error, setError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -26,6 +29,7 @@ export default function UploadPage() {
   };
 
   const upload = async () => {
+    setIsLoading(true);
     setError('');
     try {
       const { data } = await api.post('/files/presign', { email });
@@ -48,6 +52,7 @@ export default function UploadPage() {
       console.error(err);
       setError('Upload file error');
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -66,6 +71,7 @@ export default function UploadPage() {
   }, [fileId]);
 
   const removeFile = async () => {
+    setIsDeleting(true);
     if (!fileId) return;
     try {
       await api.delete(`/files/${fileId}`);
@@ -81,6 +87,7 @@ export default function UploadPage() {
       console.error(err);
       setError('Delete file error');
     }
+    setIsDeleting(false);
   };
 
   return (
@@ -95,23 +102,40 @@ export default function UploadPage() {
       </div>
       <div className="card">
         <h1>Upload your PDF</h1>
-        <label className="custom-file-upload file-label">
-          <input ref={fileInputRef} type="file" accept=".pdf" onChange={onSelect} disabled={!!fileId} />
+        <label className={`custom-file-upload file-label ${fileId || isLoading ? 'uploaded' : ''}`}>
+          <input ref={fileInputRef} type="file" accept=".pdf" onChange={onSelect} disabled={!!file || !!fileId || isLoading} />
           📄 Choose file
         </label>
-        <button onClick={upload} disabled={!file || !!fileId}>Upload</button>
-
+        {file && <span style={{ color: '#dbeafe', padding: "0 0 0 5px"}}>{file.name}</span>}
+        <button onClick={upload} disabled={!file || !!fileId || isLoading} style={{ display: 'inline-flex', justifyContent: "center" }}>
+          {isLoading ? (
+            <>
+              <span style={{ padding: "0 5px 0 0" }}>Uploading...</span>
+              <LoadingSpinner small />
+            </>
+          ) : (
+            'Upload'
+          )}
+        </button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {status && <p>Status: <strong>{status}</strong></p>}
 
-        {status === 'success' && (
+        {status === 'success' && <>
           <button className="secondary" onClick={() => router.push('/chat')}>
             Go to chat
           </button>
-        )}
+          <br /><br />
+        </>}
         {fileId && (
-          <button className="danger" onClick={removeFile}>
-            Delete file
+          <button className="danger" onClick={removeFile} disabled={isDeleting} style={{ display: 'inline-flex', justifyContent: "center" }}>
+            {isDeleting ? (
+              <>
+                <span style={{ padding: "0 5px 0 0" }}>Deleting...</span>
+                <LoadingSpinner small />
+              </>
+            ) : (
+              'Delete file'
+            )}
           </button>
         )}
       </div>
