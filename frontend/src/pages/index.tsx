@@ -23,28 +23,30 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
-      <form onSubmit={handleSubmit(onSubmit)} className="form-box">
-        <h1>Welcome</h1>
-        <p>Enter your email to get started</p>
+    <div className="app-container">
+      <div className="card">
+        <form onSubmit={handleSubmit(onSubmit)} className="form-box">
+          <h1>Welcome</h1>
+          <p>Enter your email to get started</p>
 
-        <input
-          type="email"
-          placeholder="you@example.com"
-          {...register('email', {
-            required: 'Email is required',
-            pattern: {
-              value: /^\S+@\S+$/,
-              message: 'Invalid email',
-            },
-          })}
-        />
-        {errors.email && (
-          <p style={{ color: 'red', fontSize: '12px' }}>{errors.email.message}</p>
-        )}
+          <input
+            type="email"
+            placeholder="you@example.com"
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^\S+@\S+$/,
+                message: 'Invalid email',
+              },
+            })}
+          />
+          {errors.email && (
+            <p style={{ color: 'red', fontSize: '12px' }}>{errors.email.message}</p>
+          )}
 
-        <button type="submit">Continue</button>
-      </form>
+          <button type="submit">Continue</button>
+        </form>
+      </div>
     </div>
   );
 }
